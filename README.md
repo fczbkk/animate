@@ -38,7 +38,7 @@ my_animation.start();
 
 **Properties**
 
--   `easing` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identifier of easing function.
+-   `easing` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identifier of easing function. See this page for list of available values and examples: <https://delvarworld.github.io/easing-utils/gh-pages/>
 -   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Duration of animation in milliseconds.
 -   `frequency` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Frequency of animation in milliseconds.
 -   `on_start` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation starts.

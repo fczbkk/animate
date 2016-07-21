@@ -1,6 +1,7 @@
-import createAnimation from './../src/';
+import Animation from './../src/';
 
-let my_animation = createAnimation({
+let my_animation = new Animation({
+  easing: 'easeInOutSine',
   on_start: function () {console.log('start');},
   on_finish: function () {console.log('finish');},
   on_stop: function (position) {console.log('stop', position);},
@@ -13,8 +14,6 @@ let my_animation = createAnimation({
   }
 });
 
-console.log('x', my_animation.getPosition());
-
 
 function updateElementPosition (position) {
   const element = document.getElementById('test');
@@ -24,7 +23,7 @@ function updateElementPosition (position) {
 
 
 function startAnimation () {
-  my_animation.setOptions({
+  my_animation.updateConfig({
     duration: parseInt(document.getElementById('field-duration').value, 10),
     frequency: parseInt(document.getElementById('field-frequency').value, 10)
   });

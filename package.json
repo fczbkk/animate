@@ -53,5 +53,8 @@
     "rimraf": "^2.5.3",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "easing-utils": "github:fczbkk/easing-utils"
   }
 }

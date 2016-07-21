@@ -1,4 +1,4 @@
-import * as ease from './easing';
+import * as ease from 'easing-utils';
 
 
 const noop = function () {};
@@ -11,7 +11,7 @@ export function getNow () {
 
 /**
  * @typedef {Object} AnimationConfig
- * @property {string} easing - Identifier of easing function.
+ * @property {string} easing - Identifier of easing function. See this page for list of available values and examples: https://delvarworld.github.io/easing-utils/gh-pages/
  * @property {number} duration - Duration of animation in milliseconds.
  * @property {number} frequency - Frequency of animation in milliseconds.
  * @property {Function} on_start - Function to be called when animation starts.
@@ -158,7 +158,7 @@ export default class Animation {
    * @private
    */
   _startTimer () {
-    this._timer = setInterval(() => {this._tick}, this._config.frequency);
+    this._timer = setInterval(() => {this._tick()}, this._config.frequency);
   }
 
 
