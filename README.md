@@ -36,19 +36,6 @@ my_animation.start();
 
 ### AnimationConfig
 
-**Properties**
-
--   `easing` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identifier of easing function. See this page for list of available values and examples: <https://delvarworld.github.io/easing-utils/gh-pages/>
--   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Duration of animation in milliseconds.
--   `frequency` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Frequency of animation in milliseconds.
--   `on_start` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation starts.
--   `on_finish` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation finishes.
--   `on_stop` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is stopped. Receives current position as parameter.
--   `on_end` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation ends for whatever reason (finish, stop). Receives current position as parameter.
--   `on_tick` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation ticks. Receives current position as parameter.
--   `on_pause` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is paused. Receives current position as parameter.
--   `on_resume` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is resumed. Receives current position as parameter.
-
 ### Animation
 
 Class representing the animation.
@@ -60,6 +47,18 @@ Create animation.
 **Parameters**
 
 -   `custom_config` **\[[AnimationConfig](#animationconfig)](default {})** 
+
+#### isRunning
+
+Returns `true` if animation is running.
+
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+#### isPaused
+
+Returns `true` if animation is paused.
+
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
 #### start
 

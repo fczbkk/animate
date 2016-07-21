@@ -57,13 +57,29 @@ export default class Animation {
     this.updateConfig(custom_config);
   }
 
-  // TODO add `isRunning()` and `isPaused()` methods, refactor existing code
+  /**
+   * Returns `true` if animation is running.
+   * @returns {boolean}
+   */
+  isRunning () {
+    return this._started !== null;
+  }
+
+
+  /**
+   * Returns `true` if animation is paused.
+   * @returns {boolean}
+   */
+  isPaused () {
+    return this._paused !== null;
+  }
+
 
   /**
    * Starts the animation. If the animation was running prior to starting, it will be stopped first.
    */
   start () {
-    if (this._started !== null) {
+    if (this.isRunning()) {
       this.stop();
     }
     this._started = getNow();
@@ -76,7 +92,7 @@ export default class Animation {
    * Stops running animation. If animation is not running, nothing happens.
    */
   stop () {
-    if (this._started !== null) {
+    if (this.isRunning()) {
       this._config.on_stop(this.getPosition());
       this._end();
     }
@@ -87,7 +103,7 @@ export default class Animation {
    * Pauses running animation. If animation is not running, nothing happens.
    */
   pause () {
-    if (this._started !== null && this._paused === null) {
+    if (this.isRunning() && !this.isPaused()) {
       this._stopTimer();
       this._paused = getNow();
       this._config.on_pause(this.getPosition());
@@ -99,7 +115,7 @@ export default class Animation {
    * Resumes paused animation. If animation is not paused, nothing happens.
    */
   resume () {
-    if (this._started !== null && this._paused !== null) {
+    if (this.isPaused()) {
       this._started = this._started + (getNow() - this._paused);
       this._paused = null;
       this._startTimer();
@@ -113,7 +129,7 @@ export default class Animation {
    * @returns {number} Value between 0 (start) and 1 (end).
    */
   getPosition () {
-    if (this._started === null) {return 0;}
+    if (!this.isRunning()) {return 0;}
 
     const start = this._started;
     const duration = this._config.duration;
