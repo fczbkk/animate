@@ -1,117 +1,208 @@
-import {
-  sanitizeConfig,
-  getNow,
-  calculatePosition
-} from './utilities';
+import * as ease from './easing';
+
+
+const noop = function () {};
+
+
+export function getNow () {
+  return (new Date).getTime();
+}
 
 
 /**
- * Interface of the animation object.
- * @typedef {Object} AnimationInterface
- * @property {Function} start - Starts the animation.
- * @property {Function} stop - Stops the animation.
- * @property {Function} pause - Pauses the animation. When resumed, it will continue at the same spot it was paused. Can only be paused when running.
- * @property {Function} resume - Resumes the animation. Can only be resumed when paused.
- * @property {Function} getPosition - Returns current animation position, which is number between 0 and 1.
- * @property {Function} setOptions - Updates animation options, e.g. duration, frequency. Accepts AnimationConfig object as a parameter.
+ * @typedef {Object} AnimationConfig
+ * @property {string} easing - Identifier of easing function.
+ * @property {number} duration - Duration of animation in milliseconds.
+ * @property {number} frequency - Frequency of animation in milliseconds.
+ * @property {Function} on_start - Function to be called when animation starts.
+ * @property {Function} on_finish - Function to be called when animation finishes.
+ * @property {Function} on_stop - Function to be called when animation is stopped. Receives current position as parameter.
+ * @property {Function} on_end - Function to be called when animation ends for whatever reason (finish, stop). Receives current position as parameter.
+ * @property {Function} on_tick - Function to be called when animation ticks. Receives current position as parameter.
+ * @property {Function} on_pause - Function to be called when animation is paused. Receives current position as parameter.
+ * @property {Function} on_resume - Function to be called when animation is resumed. Receives current position as parameter.
+ * @type {{easing: string, duration: number, frequency: number, on_start: Function, on_finish: Function, on_stop: Function, on_end: Function, on_tick: Function, on_pause: Function, on_resume: Function}}
  */
+export const default_config = {
+  easing: 'linear',
+  duration: 300,
+  frequency: 10,
+  // repeat: 1,
+  on_start: noop,
+  on_finish: noop,
+  on_stop: noop,
+  on_end: noop,  // finish or stop
+  on_tick: noop,
+  on_pause: noop,
+  on_resume: noop
+};
 
 
 /**
- * @function createAnimation
- * @param {AnimationConfig} custom_config
- * @returns {AnimationInterface}
+ * Class representing the animation.
+ * @name Animation
  */
-export default function createAnimation (custom_config = {}) {
-  let config = sanitizeConfig(custom_config);
-  let timer = null;
-  let is_running = false;
-  let is_paused = false;
+export default class Animation {
 
-  let started = null;
-  let paused = null;
+  /**
+   * Create animation.
+   * @param {AnimationConfig} custom_config
+   */
+  constructor (custom_config = {}) {
+    this._timer = null;
+    this._started = null;
+    this._paused = null;
 
-  function startTimer () {
-    timer = setInterval(doTick, config.frequency);
+    this._config = {};
+    this.updateConfig(default_config);
+    this.updateConfig(custom_config);
   }
 
-  function stopTimer () {
-    clearInterval(timer);
-  }
+  // TODO add `isRunning()` and `isPaused()` methods, refactor existing code
 
-  function doEnd () {
-    stopTimer();
-    is_running = false;
-    is_paused = false;
-    started = null;
-    paused = null;
-    config.on_end(doGetPosition());
-  }
-
-  function doStart () {
-    if (is_running === true) {
-      doStop();
+  /**
+   * Starts the animation. If the animation was running prior to starting, it will be stopped first.
+   */
+  start () {
+    if (this._started !== null) {
+      this.stop();
     }
-    is_running = true;
-
-    started = getNow();
-    startTimer();
-
-    config.on_start();
+    this._started = getNow();
+    this._startTimer();
+    this._config.on_start();
   }
 
-  function doStop () {
-    config.on_stop(doGetPosition());
-    doEnd();
-  }
 
-  function doPause () {
-    if (is_running === true && is_paused === false) {
-      stopTimer();
-      is_paused = true;
-      paused = getNow();
-      config.on_pause(doGetPosition());
+  /**
+   * Stops running animation. If animation is not running, nothing happens.
+   */
+  stop () {
+    if (this._started !== null) {
+      this._config.on_stop(this.getPosition());
+      this._end();
     }
   }
 
-  function doResume () {
-    if (is_running === true && is_paused === true) {
-      started = started + (getNow() - paused);
-      paused = null;
-      is_paused = false;
-      startTimer();
-      config.on_resume(doGetPosition());
+
+  /**
+   * Pauses running animation. If animation is not running, nothing happens.
+   */
+  pause () {
+    if (this._started !== null && this._paused === null) {
+      this._stopTimer();
+      this._paused = getNow();
+      this._config.on_pause(this.getPosition());
     }
   }
 
-  function doFinish () {
-    config.on_finish();
-    doEnd();
+
+  /**
+   * Resumes paused animation. If animation is not paused, nothing happens.
+   */
+  resume () {
+    if (this._started !== null && this._paused !== null) {
+      this._started = this._started + (getNow() - this._paused);
+      this._paused = null;
+      this._startTimer();
+      this._config.on_resume(this.getPosition());
+    }
   }
 
-  function doTick () {
-    const position = doGetPosition();
-    config.on_tick(position);
+
+  /**
+   * Returns current position of animation. If animation is not running, returns zero.
+   * @returns {number} Value between 0 (start) and 1 (end).
+   */
+  getPosition () {
+    if (this._started === null) {return 0;}
+
+    const start = this._started;
+    const duration = this._config.duration;
+    const easing = this._config.easing;
+    const now = getNow();
+    const end = start + duration;
+    const position = (now >= end) ? 1 : ease[easing]((now - start) / duration);
+    return position;
+  }
+
+
+  /**
+   * Updates animation config with new values. Unknown values will be ignored.
+   * @param {AnimationConfig} config
+   */
+  updateConfig (config = {}) {
+    if (typeof config.easing === 'string') {
+      this._config.easing = config.easing;
+    }
+
+    if (!isNaN(config.duration)) {
+      this._config.duration = config.duration;
+    }
+
+    if (!isNaN(config.frequency)) {
+      this._config.frequency = config.frequency;
+    }
+
+    ['start', 'finish', 'stop', 'end', 'tick', 'pause', 'resume']
+      .forEach((callback_type) => {
+        const callback_id = `on_${callback_type}`;
+        if (typeof config[callback_id] === 'function') {
+          this._config[callback_id] = config[callback_id];
+        }
+      });
+  }
+
+
+  /**
+   * Starts the animation timer.
+   * @private
+   */
+  _startTimer () {
+    this._timer = setInterval(() => {this._tick}, this._config.frequency);
+  }
+
+
+  /**
+   * Stops the animatino timer.
+   * @private
+   */
+  _stopTimer () {
+    clearInterval(this._timer);
+  }
+
+
+  /**
+   * Evaluates the position of animation. Stops it if position reaches 1.
+   * @private
+   */
+  _tick () {
+    const position = this.getPosition();
+    this._config.on_tick(position);
     if (position === 1) {
-      doFinish();
+      this._finish();
     }
   }
 
-  function doGetPosition () {
-    return calculatePosition(started, config.duration);
+
+  /**
+   * Ends the animation, cleans up the metadata used when running.
+   * @private
+   */
+  _end () {
+    this._stopTimer();
+    this._config.on_end(this.getPosition());
+    this._started = null;
+    this._paused = null;
   }
 
-  function doSetOptions (custom_config = {}) {
-    config = sanitizeConfig(custom_config, config);
-  }
 
-  return  {
-    start: doStart,
-    stop: doStop,
-    pause: doPause,
-    resume: doResume,
-    getPosition: doGetPosition,
-    setOptions: doSetOptions
-  };
+  /**
+   * Called when animation runs to the end.
+   * @private
+   */
+  _finish () {
+    this._config.on_finish();
+    this._end();
+  }
 
 }

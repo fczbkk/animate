@@ -34,38 +34,62 @@ my_animation.start();
 
 ## Documentation
 
-### AnimationInterface
-
-Interface of the animation object.
-
-**Parameters**
-
--   `custom_config`   (optional, default `{}`)
-
-**Properties**
-
--   `start` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Starts the animation.
--   `stop` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Stops the animation.
--   `pause` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Pauses the animation. When resumed, it will continue at the same spot it was paused. Can only be paused when running.
--   `resume` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Resumes the animation. Can only be resumed when paused.
--   `getPosition` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Returns current animation position, which is number between 0 and 1.
--   `setOptions` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Updates animation options, e.g. duration, frequency. Accepts AnimationConfig object as a parameter.
-
-### createAnimation
-
-**Parameters**
-
--   `custom_config` **\[[AnimationConfig](#animationconfig)](default {})**
-
-Returns **[AnimationInterface](#animationinterface)**
-
 ### AnimationConfig
 
 **Properties**
 
--   `easing` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** ='linear' - Easing function to be used.
--   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** =300 - Duration of animation in milliseconds.
--   `frequency` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** =10 - Frequency of animation redraws in milliseconds.
+-   `easing` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identifier of easing function.
+-   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Duration of animation in milliseconds.
+-   `frequency` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Frequency of animation in milliseconds.
+-   `on_start` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation starts.
+-   `on_finish` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation finishes.
+-   `on_stop` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is stopped. Receives current position as parameter.
+-   `on_end` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation ends for whatever reason (finish, stop). Receives current position as parameter.
+-   `on_tick` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation ticks. Receives current position as parameter.
+-   `on_pause` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is paused. Receives current position as parameter.
+-   `on_resume` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Function to be called when animation is resumed. Receives current position as parameter.
+
+### Animation
+
+Class representing the animation.
+
+#### constructor
+
+Create animation.
+
+**Parameters**
+
+-   `custom_config` **\[[AnimationConfig](#animationconfig)](default {})** 
+
+#### start
+
+Starts the animation. If the animation was running prior to starting, it will be stopped first.
+
+#### stop
+
+Stops running animation. If animation is not running, nothing happens.
+
+#### pause
+
+Pauses running animation. If animation is not running, nothing happens.
+
+#### resume
+
+Resumes paused animation. If animation is not paused, nothing happens.
+
+#### getPosition
+
+Returns current position of animation. If animation is not running, returns zero.
+
+Returns **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Value between 0 (start) and 1 (end).
+
+#### updateConfig
+
+Updates animation config with new values. Unknown values will be ignored.
+
+**Parameters**
+
+-   `config` **\[[AnimationConfig](#animationconfig)](default {})** 
 
 ## Bug reports, feature requests and contact
 
