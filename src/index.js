@@ -11,17 +11,16 @@ export function getNow () {
 
 /**
  * @typedef {Object} AnimationConfig
- * @property {string} easing - Identifier of easing function. See this page for list of available values and examples: https://delvarworld.github.io/easing-utils/gh-pages/
- * @property {number} duration - Duration of animation in milliseconds.
- * @property {number} frequency - Frequency of animation in milliseconds.
- * @property {Function} on_start - Function to be called when animation starts.
- * @property {Function} on_finish - Function to be called when animation finishes.
- * @property {Function} on_stop - Function to be called when animation is stopped. Receives current position as parameter.
- * @property {Function} on_end - Function to be called when animation ends for whatever reason (finish, stop). Receives current position as parameter.
- * @property {Function} on_tick - Function to be called when animation ticks. Receives current position as parameter.
- * @property {Function} on_pause - Function to be called when animation is paused. Receives current position as parameter.
- * @property {Function} on_resume - Function to be called when animation is resumed. Receives current position as parameter.
- * @type {{easing: string, duration: number, frequency: number, on_start: Function, on_finish: Function, on_stop: Function, on_end: Function, on_tick: Function, on_pause: Function, on_resume: Function}}
+ * @property {string} [easing] - Identifier of easing function. See this page for list of available values and examples: https://delvarworld.github.io/easing-utils/gh-pages/
+ * @property {number} [duration] - Duration of animation in milliseconds.
+ * @property {number} [frequency] - Frequency of animation in milliseconds.
+ * @property {Function} [on_start] - Function to be called when animation starts.
+ * @property {Function} [on_finish] - Function to be called when animation finishes.
+ * @property {Function} [on_stop] - Function to be called when animation is stopped. Receives current position as parameter.
+ * @property {Function} [on_end] - Function to be called when animation ends for whatever reason (finish, stop). Receives current position as parameter.
+ * @property {Function} [on_tick] - Function to be called when animation ticks. Receives current position as parameter.
+ * @property {Function} [on_pause] - Function to be called when animation is paused. Receives current position as parameter.
+ * @property {Function} [on_resume] - Function to be called when animation is resumed. Receives current position as parameter.
  */
 export const default_config = {
   easing: 'linear',
@@ -121,8 +120,7 @@ export default class Animation {
     const easing = this._config.easing;
     const now = getNow();
     const end = start + duration;
-    const position = (now >= end) ? 1 : ease[easing]((now - start) / duration);
-    return position;
+    return (now >= end) ? 1 : ease[easing]((now - start) / duration);
   }
 
 

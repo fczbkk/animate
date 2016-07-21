@@ -153,26 +153,3 @@ describe('options', function () {
   });
 
 });
-
-describe('helpers', function () {
-
-  beforeEach(function () {
-    jasmine.clock().install();
-    jasmine.clock().mockDate();
-  });
-
-  afterEach(function () {
-    jasmine.clock().uninstall();
-  });
-
-  it('should get position', function () {
-    const animation = new Animation({duration: 100});
-    animation.start();
-    expect(animation.getPosition()).toEqual(0);
-    jasmine.clock().tick(50);
-    expect(animation.getPosition()).toEqual(0.5);
-    jasmine.clock().tick(50);
-    expect(animation.getPosition()).toEqual(1);
-  });
-
-});
