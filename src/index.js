@@ -215,8 +215,8 @@ export default class Animation {
    * @private
    */
   _finish () {
-    this._config.on_finish();
     this._end();
+    this._config.on_finish();
   }
 
 }
