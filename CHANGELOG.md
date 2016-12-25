@@ -1,3 +1,13 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/fczbkk/animate/compare/v2.0.2...v2.1.0) (2016-12-25)
+
+
+### Features
+
+* add support for smooth animations via `window.requestAnimationFrame` ([923371a](https://github.com/fczbkk/animate/commit/923371a))
+
+
+
 <a name="2.0.2"></a>
 ## [2.0.2](https://github.com/fczbkk/animate/compare/v2.0.1...v2.0.2) (2016-09-02)
 
