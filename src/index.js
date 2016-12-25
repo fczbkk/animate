@@ -2,7 +2,7 @@ import * as ease from 'easing-utils';
 
 
 const noop = function () {};
-
+const is_modern = !!window.requestAnimationFrame;
 
 export function getNow () {
   return (new Date).getTime();
@@ -13,7 +13,7 @@ export function getNow () {
  * @typedef {Object} AnimationConfig
  * @property {string} [easing] - Identifier of easing function. See this page for list of available values and examples: https://delvarworld.github.io/easing-utils/gh-pages/
  * @property {number} [duration] - Duration of animation in milliseconds.
- * @property {number} [frequency] - Frequency of animation in milliseconds.
+ * @property {number} [frequency] - Frequency of animation in milliseconds. This is only used in old browsers (e.g. IE9) which do not support `window.requestAnimationFrame`.
  * @property {Function} [on_start] - Function to be called when animation starts.
  * @property {Function} [on_finish] - Function to be called when animation finishes.
  * @property {Function} [on_stop] - Function to be called when animation is stopped. Receives current position as parameter.
@@ -172,12 +172,16 @@ export default class Animation {
    * @private
    */
   _startTimer () {
-    this._timer = setInterval(() => {this._tick()}, this._config.frequency);
+    if (is_modern) {
+      this._tick();
+    } else {
+      this._timer = setInterval(() => {this._tick()}, this._config.frequency);
+    }
   }
 
 
   /**
-   * Stops the animatino timer.
+   * Stops the animation timer.
    * @private
    */
   _stopTimer () {
@@ -190,10 +194,15 @@ export default class Animation {
    * @private
    */
   _tick () {
-    const position = this.getPosition();
-    this._config.on_tick(position);
-    if (position === 1) {
-      this._finish();
+    if (this.isRunning() && !this.isPaused()) {
+      const position = this.getPosition();
+      this._config.on_tick(position);
+      if (position === 1) {
+        this._finish();
+      }
+      if (is_modern) {
+        window.requestAnimationFrame(this._tick.bind(this));
+      }
     }
   }
 
